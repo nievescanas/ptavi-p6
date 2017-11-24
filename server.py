@@ -3,19 +3,14 @@
 """
 Clase (y programa principal) para un servidor de eco en UDP simple
 """
-
+import os
 import sys
 import socketserver
 import os.path as path
 
-class EchoHandler(socketserver.DatagramRequestHandler):
-    """
-    Echo server class
-    """
 
-    """
-    Comprueba si existe el fichero y lo utiliza como diccionario
-    """
+class EchoHandler(socketserver.DatagramRequestHandler):
+
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
             # Leyendo línea a línea lo que nos envía el cliente
@@ -34,24 +29,26 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                 elif line[0] == 'BYE':
                     line = 'SIP/2.0 ' + '200 ' + 'OK\r\n\r\n'
                     self.wfile.write(bytes(line, 'utf-8'))
+                elif line[0] == 'ACK':
+                    Ejecutar = 'mp32rtp -i 127.0.0.1 -p 23032 < ' + sys.argv[3]
+                    os.system(Ejecutar)
+
                 elif line[0] != ('INVITE' and 'BYE'):
                     line = 'SIP/2.0 ' + '405 ' + 'Method Not Allowed\r\n\r\n'
                     self.wfile.write(bytes(line, 'utf-8'))
-                elif line[2] != ('SIP/2.0') :
+                elif line[2] != ('SIP/2.0'):
                     line = 'SIP/2.0 ' + '400 ' + ' Bad Request\r\n\r\n'
-                    self.wfile.write(bytes(line, 'utf-8'))                    
-                    
+                    self.wfile.write(bytes(line, 'utf-8'))
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
 
     try:
         sys.argv[2] == int
-        len(sys.argv) != 4
-        if path.exists(sys.argv[3]):
+        if path.exists(sys.argv[3]) and len(sys.argv) == 4:
             print('Listening...')
         else:
-            raise IndexError      
+            raise IndexError
     except IndexError:
         sys.exit("Usage: python3 server.py IP port audio_file")
 
@@ -59,9 +56,4 @@ if __name__ == "__main__":
     try:
         serv.serve_forever()
     except KeyboardInterrupt:
-        print("Finalizado servidor")        
-
-
-    
-    
-    
+        print("Finalizado servidor")
