@@ -41,8 +41,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                     self.wfile.write(bytes(line, 'utf-8'))
 
 if __name__ == "__main__":
-    # Creamos servidor de eco y escuchamos
-
+    # Errores: Entrada de linea de comandos.
     try:
         sys.argv[2] == int
         if path.exists(sys.argv[3]) and len(sys.argv) == 4:
@@ -51,7 +50,7 @@ if __name__ == "__main__":
             raise IndexError
     except IndexError:
         sys.exit("Usage: python3 server.py IP port audio_file")
-
+    # Creamos servidor de eco y escuchamos
     serv = socketserver.UDPServer(('', int(sys.argv[2])), EchoHandler)
     try:
         serv.serve_forever()
